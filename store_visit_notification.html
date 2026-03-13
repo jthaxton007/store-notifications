@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Store Visit Notification Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 968px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+
+        h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #555;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #555;
+        }
+
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+
+        .btn-copy {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-copy:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        #output {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 25px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            min-height: 400px;
+        }
+
+        #output h3 {
+            color: #667eea;
+            margin-bottom: 5px;
+            font-size: 20px;
+        }
+
+        #output h4 {
+            color: #764ba2;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        #output p {
+            margin-bottom: 15px;
+        }
+
+        #output ul, #output ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+
+        #output li {
+            margin-bottom: 8px;
+        }
+
+        #output hr {
+            border: none;
+            border-top: 2px solid #e0e0e0;
+            margin: 20px 0;
+        }
+
+        .success-message {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 10px;
+            display: none;
+            font-size: 14px;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .header-info {
+            background: #f0f4ff;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .header-info p {
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        .work-items-container, .action-items-container {
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 10px;
+            background: #fafafa;
+        }
+
+        .item-entry {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .item-entry input {
+            flex: 1;
+        }
+
+        .btn-small {
+            flex: none;
+            padding: 8px 12px;
+            font-size: 12px;
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-small:hover {
+            background: #c82333;
+        }
+
+        .btn-add {
+            padding: 8px 16px;
+            font-size: 13px;
+            background: #28a745;
+            color: white;
+            margin-top: 10px;
+        }
+
+        .btn-add:hover {
+            background: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Input Form Panel -->
+        <div class="panel">
+            <h1>🔧 Store Visit Notification Generator</h1>
+            <div class="header-info">
+                <p><strong>Purpose:</strong> Generate standardized IS&T Retail Network visit notifications for store maintenance and support activities</p>
+            </div>
+
+            <h2>Store Information</h2>
+            <div class="row">
+                <div class="form-group">
+                    <label for="storeNumber">Store Number *</label>
+                    <input type="text" id="storeNumber" placeholder="e.g., R415" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="storeName">Store Name *</label>
+                    <input type="text" id="storeName" placeholder="e.g., Boylston Street" required>
+                </div>
+            </div>
+
+            <h2>Visit Schedule</h2>
+            <div class="form-group">
+                <label for="visitDate">Visit Date *</label>
+                <input type="date" id="visitDate" required>
+            </div>
+
+            <div class="row">
+                <div class="form-group">
+                    <label for="arrivalTime">Arrival Time *</label>
+                    <input type="time" id="arrivalTime" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="workDescription">Work Description *</label>
+                    <input type="text" id="workDescription" placeholder="e.g., FOH Fixture Replacement" required>
+                </div>
+            </div>
+
+            <h2>Scope of Work</h2>
+            <div class="form-group">
+                <label>Work Items *</label>
+                <div class="work-items-container" id="workItemsContainer">
+                    <div class="item-entry">
+                        <input type="text" class="work-item" placeholder="e.g., FOH Fixture Replacement" required>
+                        <button type="button" class="btn-small" onclick="removeWorkItem(this)">Remove</button>
+                    </div>
+                </div>
+                <button type="button" class="btn-add" onclick="addWorkItem()">+ Add Work Item</button>
+            </div>
+
+            <h2>Technician Information</h2>
+            <div class="form-group">
+                <label for="technicianName">Technician Name *</label>
+                <input type="text" id="technicianName" placeholder="e.g., Brian Eathorne" required>
+            </div>
+
+            <div class="form-group">
+                <label for="technicianPhone">Technician Phone *</label>
+                <input type="tel" id="technicianPhone" placeholder="e.g., 1 (860) 597-3498" required>
+            </div>
+
+            <h2>Additional Action Items (Optional)</h2>
+            <div class="form-group">
+                <div class="action-items-container" id="actionItemsContainer">
+                    <!-- Custom action items will be added here -->
+                </div>
+                <button type="button" class="btn-add" onclick="addActionItem()">+ Add Custom Action Item</button>
+            </div>
+
+            <div class="button-group">
+                <button type="button" class="btn-primary" onclick="generateNotification()">Generate Notification</button>
+                <button type="button" class="btn-secondary" onclick="resetForm()">Reset Form</button>
+            </div>
+        </div>
+
+        <!-- Output Panel -->
+        <div class="panel">
+            <h1>📧 Generated Notification</h1>
+            <div id="output">
+                <p style="color: #888; text-align: center; padding: 40px 20px;">
+                    Fill out the form on the left and click "Generate Notification" to create your store visit notification.
+                </p>
+            </div>
+
+            <div class="button-group">
+                <button type="button" class="btn-copy" onclick="copyToClipboard()">Copy to Clipboard</button>
+            </div>
+            <div class="success-message" id="successMessage">
+                ✓ Notification copied to clipboard!
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function formatDate(dateString) {
+            const date = new Date(dateString + 'T00:00:00');
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const formatted = date.toLocaleDateString('en-US', options);
+            
+            // Add ordinal suffix to day
+            const day = date.getDate();
+            let suffix = 'th';
+            if (day === 1 || day === 21 || day === 31) suffix = 'st';
+            else if (day === 2 || day === 22) suffix = 'nd';
+            else if (day === 3 || day === 23) suffix = 'rd';
+            
+            return formatted.replace(/\d+/, day + suffix);
+        }
+
+        function formatTime(timeString) {
+            const [hours, minutes] = timeString.split(':');
+            const hour = parseInt(hours);
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            const displayHour = hour % 12 || 12;
+            return `${displayHour}:${minutes} ${ampm}`;
+        }
+
+        function addWorkItem() {
+            const container = document.getElementById('workItemsContainer');
+            const newItem = document.createElement('div');
+            newItem.className = 'item-entry';
+            newItem.innerHTML = `
+                <input type="text" class="work-item" placeholder="Enter work item description" required>
+                <button type="button" class="btn-small" onclick="removeWorkItem(this)">Remove</button>
+            `;
+            container.appendChild(newItem);
+        }
+
+        function removeWorkItem(button) {
+            const container = document.getElementById('workItemsContainer');
+            if (container.children.length > 1) {
+                button.parentElement.remove();
+            } else {
+                alert('At least one work item is required.');
+            }
+        }
+
+        function addActionItem() {
+            const container = document.getElementById('actionItemsContainer');
+            const newItem = document.createElement('div');
+            newItem.className = 'item-entry';
+            newItem.innerHTML = `
+                <input type="text" class="action-item" placeholder="Enter custom action item" required>
+                <button type="button" class="btn-small" onclick="removeActionItem(this)">Remove</button>
+            `;
+            container.appendChild(newItem);
+        }
+
+        function removeActionItem(button) {
+            button.parentElement.remove();
+        }
+
+        function generateNotification() {
+            // Get form values
+            const storeNumber = document.getElementById('storeNumber').value.trim();
+            const storeName = document.getElementById('storeName').value.trim();
+            const visitDate = document.getElementById('visitDate').value;
+            const arrivalTime = document.getElementById('arrivalTime').value;
+            const workDescription = document.getElementById('workDescription').value.trim();
+            const technicianName = document.getElementById('technicianName').value.trim();
+            const technicianPhone = document.getElementById('technicianPhone').value.trim();
+
+            // Validate required fields
+            if (!storeNumber || !storeName || !visitDate || !arrivalTime || !workDescription || !technicianName || !technicianPhone) {
+                alert('Please fill in all required fields (marked with *)');
+                return;
+            }
+
+            // Get work items
+            const workItemInputs = document.querySelectorAll('.work-item');
+            let workItemsList = '';
+            let hasWorkItems = false;
+            workItemInputs.forEach(input => {
+                if (input.value.trim()) {
+                    workItemsList += `        <li style="margin-bottom: 8px;">${input.value.trim()}</li>\n`;
+                    hasWorkItems = true;
+                }
+            });
+
+            if (!hasWorkItems) {
+                alert('Please add at least one work item.');
+                return;
+            }
+
+            // Get custom action items
+            const actionItemInputs = document.querySelectorAll('.action-item');
+            let customActionItems = '';
+            actionItemInputs.forEach(input => {
+                if (input.value.trim()) {
+                    customActionItems += `        <li style="margin-bottom: 8px;">${input.value.trim()}</li>\n`;
+                }
+            });
+
+            // Format date and time
+            const formattedDate = formatDate(visitDate);
+            const formattedTime = formatTime(arrivalTime);
+
+            // Generate output with enhanced styling
+            let output = `
+<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 650px;">
+    <h3 style="color: #667eea; margin-bottom: 5px; font-size: 20px; font-weight: 600; text-align: center;">IS&T Retail Network Visit Notification</h3>
+    
+    <hr style="border: none; border-top: 3px solid #667eea; margin: 20px 0;">
+    
+    <p style="margin-bottom: 15px;">Hello <strong>${storeName}</strong>,</p>
+    
+    <p style="margin-bottom: 20px;">IS&T Retail Networks has scheduled a visit the evening of <strong>${formattedDate}</strong>. This visit is to perform <strong>${workDescription}</strong>. Completion of the action items in this notification will ensure a successful visit.</p>
+    
+    <h4 style="color: #764ba2; font-weight: 600; margin-bottom: 12px; margin-top: 20px;">Scope of Work</h4>
+    <p style="margin-bottom: 10px;">The following will be accomplished:</p>
+    <ul style="margin-left: 20px; margin-bottom: 15px;">
+${workItemsList}
+    </ul>
+    
+    <p style="margin-bottom: 20px;"><strong>Technician's information:</strong> ${technicianName} | Number: ${technicianPhone}<br>
+    Technician will arrive about <strong>${formattedTime}</strong> and check in with the closing MOD.</p>
+    
+    <h4 style="color: #764ba2; font-weight: 600; margin-bottom: 12px; margin-top: 20px;">Your Action Items</h4>
+    <ul style="margin-left: 20px; margin-bottom: 20px;">
+        <li style="margin-bottom: 8px;">Please provide name and phone number of the closing MOD that technician should check in with.</li>
+        <li style="margin-bottom: 8px;">Please arrange overnight security and let us know once it's confirmed.</li>
+${customActionItems}
+    </ul>
+    
+    <p style="margin-top: 25px; margin-bottom: 15px;">If you have any questions before the visit please let us know.</p>
+    
+    <hr style="border: none; border-top: 3px solid #667eea; margin: 20px 0;">
+    
+    <p style="margin-bottom: 5px;">Thank you,<br>
+    <strong>GNS Retail Network</strong></p>
+</div>
+            `;
+
+            // Display output
+            document.getElementById('output').innerHTML = output;
+        }
+
+        async function copyToClipboard() {
+            const output = document.getElementById('output');
+            
+            if (!output.innerText || output.innerText.includes('Fill out the form')) {
+                alert('Please generate a notification first!');
+                return;
+            }
+
+            const htmlContent = output.innerHTML;
+            const plainText = output.innerText;
+
+            try {
+                // Try modern Clipboard API first
+                if (navigator.clipboard && navigator.clipboard.write) {
+                    const htmlBlob = new Blob([htmlContent], { type: 'text/html' });
+                    const textBlob = new Blob([plainText], { type: 'text/plain' });
+                    
+                    const clipboardItem = new ClipboardItem({
+                        'text/html': htmlBlob,
+                        'text/plain': textBlob
+                    });
+                    
+                    await navigator.clipboard.write([clipboardItem]);
+                    showSuccess();
+                } else if (navigator.clipboard && navigator.clipboard.writeText) {
+                    // Fallback to plain text only
+                    await navigator.clipboard.writeText(plainText);
+                    showSuccess();
+                } else {
+                    // Final fallback using execCommand
+                    fallbackCopy(htmlContent);
+                }
+            } catch (err) {
+                console.error('Clipboard API failed:', err);
+                fallbackCopy(htmlContent);
+            }
+        }
+
+        function fallbackCopy(htmlContent) {
+            const temp = document.createElement('div');
+            temp.innerHTML = htmlContent;
+            temp.style.position = 'fixed';
+            temp.style.left = '-9999px';
+            document.body.appendChild(temp);
+            
+            const range = document.createRange();
+            range.selectNodeContents(temp);
+            
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showSuccess();
+                } else {
+                    alert('Copy failed. Please manually select and copy the notification text.');
+                }
+            } catch (err) {
+                console.error('execCommand failed:', err);
+                alert('Copy failed. Please manually select and copy the notification text.');
+            }
+            
+            selection.removeAllRanges();
+            document.body.removeChild(temp);
+        }
+
+        function showSuccess() {
+            const successMsg = document.getElementById('successMessage');
+            successMsg.style.display = 'block';
+            setTimeout(() => {
+                successMsg.style.display = 'none';
+            }, 3000);
+        }
+
+        function resetForm() {
+            if (confirm('Are you sure you want to reset the form? All entered data will be lost.')) {
+                document.getElementById('storeNumber').value = '';
+                document.getElementById('storeName').value = '';
+                document.getElementById('visitDate').value = '';
+                document.getElementById('arrivalTime').value = '19:30';
+                document.getElementById('workDescription').value = '';
+                document.getElementById('technicianName').value = '';
+                document.getElementById('technicianPhone').value = '';
+                
+                // Reset work items to one
+                const workItemsContainer = document.getElementById('workItemsContainer');
+                workItemsContainer.innerHTML = `
+                    <div class="item-entry">
+                        <input type="text" class="work-item" placeholder="e.g., FOH Fixture Replacement" required>
+                        <button type="button" class="btn-small" onclick="removeWorkItem(this)">Remove</button>
+                    </div>
+                `;
+
+                // Clear custom action items
+                document.getElementById('actionItemsContainer').innerHTML = '';
+                
+                document.getElementById('output').innerHTML = `
+                    <p style="color: #888; text-align: center; padding: 40px 20px;">
+                        Fill out the form on the left and click "Generate Notification" to create your store visit notification.
+                    </p>
+                `;
+            }
+        }
+
+        // Set default time to 7:30 PM
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('arrivalTime').value = '19:30';
+        });
+
+        // Allow Enter key to generate
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+                e.preventDefault();
+                generateNotification();
+            }
+        });
+    </script>
+</body>
+</html>
